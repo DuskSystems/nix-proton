@@ -1,0 +1,66 @@
+name: sync
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * *"
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Free space
+        run: |
+          set -euxo pipefail
+
+          sudo free -h
+          sudo swapon --show
+          sudo df -h
+
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+
+          sudo free -h
+          sudo swapon --show
+          sudo df -h
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v16
+        with:
+          determinate: false
+
+      - name: Sync updates
+        shell: nix develop --command bash {0}
+        run: |
+          set -euxo pipefail
+          ./scripts/proton-mail-desktop.sh
+          ./scripts/proton-pass-desktop.sh
+          ./scripts/proton-pass-firefox.sh
+          ./scripts/proton-vpn-firefox.sh
+
+      - name: Push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add .
+            git commit -m "$(date --utc --rfc-email)"
+            git push
+          fi
