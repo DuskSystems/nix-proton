@@ -65,13 +65,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass-desktop";
-  version = "1.30.1";
+  version = "1.30.1.1";
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
     rev = "proton-pass@${finalAttrs.version}";
-    hash = "sha256-m+VnMEHqZg/27tjJHOT8cV+r1VVGdscw3Cc6hogid8s=";
+    hash = "sha256-dHGSOqZODdq8S61sCPVnCEHnlMBzVDtsTNOtztiaVpg=";
   };
 
   postPatch = ''
@@ -145,7 +145,7 @@ stdenv.mkDerivation (finalAttrs: {
       cargoRoot
       ;
 
-    hash = "sha256-zUC6YERcBCwQf075V8/VEjeNcWTzhhsHzvLR22d3h5I=";
+    hash = "sha256-evxA3M+QsT3abC6EFHfzEK4ZUbnuxFHuBuX4uNJuEKw=";
   };
 
   berryOfflineCache = fetchBerryDeps {
