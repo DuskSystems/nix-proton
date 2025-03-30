@@ -35,6 +35,11 @@
     {
       overlays = {
         default = final: prev: {
+          electron-forge-hooks = prev.callPackage pkgs/electron-forge-hooks { };
+          inherit (final.electron-forge-hooks)
+            forgeConfigHook
+            ;
+
           fetch-berry-deps = prev.callPackage pkgs/fetch-berry-deps { };
           inherit (final.fetch-berry-deps)
             fetchBerryDeps

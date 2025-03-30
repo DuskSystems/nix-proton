@@ -12,6 +12,7 @@
   nodejs,
   yarn-berry,
 
+  forgeConfigHook,
   electron,
   zip,
 
@@ -52,17 +53,6 @@
   systemd,
 }:
 
-let
-  tags = {
-    x86_64-linux = "linux-x64";
-    armv7l-linux = "linux-armv7l";
-    aarch64-linux = "linux-arm64";
-    x86_64-darwin = "darwin-x64";
-    aarch64-darwin = "darwin-arm64";
-  };
-
-  platform = tags."${stdenv.hostPlatform.system}" or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
-in
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass-desktop";
   version = "1.30.1.1";
@@ -78,10 +68,6 @@ stdenv.mkDerivation (finalAttrs: {
     cp ${./yarn.lock} yarn.lock
     cp ${./Cargo.lock} applications/pass-desktop/native/Cargo.lock
 
-    # Electron Forge tries to do checksum verification over the network.
-    substituteInPlace applications/pass-desktop/forge.config.js \
-      --replace-fail "packagerConfig: {" "packagerConfig: { download: { unsafelyDisableChecksums: true, },"
-
     patchShebangs .
   '';
 
@@ -94,6 +80,7 @@ stdenv.mkDerivation (finalAttrs: {
     nodejs
     yarn-berry
 
+    forgeConfigHook
     electron
     zip
 
@@ -159,27 +146,11 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-PjYE+xdCBYCuX2q1CtlPiWsElsXwuTBIoXeaZ2l5b4Q=";
   };
 
-  env = {
-    ELECTRON_CUSTOM_VERSION = "${electron.version}";
-  };
+  postConfigure = ''
+    forgeConfigHook applications/pass-desktop/forge.config.js
+  '';
 
   buildPhase = ''
-    export HOME=$(mktemp -d)
-    ZIP_FILE="electron-v${electron.version}-${platform}.zip"
-    ZIP_HASH=$(echo -n "https://github.com/electron/electron/releases/download/v${electron.version}" | sha256sum | cut -d ' ' -f 1)
-    mkdir -p $HOME/.cache/electron/$ZIP_HASH
-
-    ELECTRON=$(mktemp -d)
-    cp -r ${electron}/libexec/electron/* $ELECTRON
-    chmod -R u+w $ELECTRON
-
-    pushd $ELECTRON
-    zip -r $HOME/.cache/electron/$ZIP_HASH/$ZIP_FILE .
-    popd
-
-    chmod 644 $HOME/.cache/electron/$ZIP_HASH/$ZIP_FILE
-    chmod -R u+w $HOME/.cache
-
     # This is the same as running `yarn workspace proton-pass-desktop build:desktop`
     # Except we only build a native release for the current platform.
     pushd applications/pass-desktop
