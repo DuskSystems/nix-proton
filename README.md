@@ -28,6 +28,6 @@ You'll need the following config too:
 I'll likely upstream this into nixpkgs eventually, but a few blockers/concerns:
 - [nixpkgs doesn't support yarn berry yet](https://github.com/NixOS/nixpkgs/issues/254369).
 - Protons release process is a little spotty, with old tags/branches being deleted when their repos are re-synced.
-- Arboard feature fix should be handled by Proton, not via a patch.
-- There's a bug with the Mail client on Wayland not working on initial launch. Opening with X11 once, then using Wayland from then on works fine.
+- Arboard feature fix should be handled by Proton, not via a patch. (Support Ticket #3578937)
+- There's a bug with the Mail client on Wayland not working on initial launch. Opening with X11 once, then using Wayland from then on works fine. (Support Ticket #3578963)
 - No MacOS support currently.
