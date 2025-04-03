@@ -10,6 +10,10 @@ if [ "$OLD_VERSION" = "$NEW_VERSION" ]; then
   exit 0
 fi
 
+if [ "$NEW_VERSION" = "null" ]; then
+  exit 0
+fi
+
 OLD_SRC_HASH=$(nix eval --raw .#proton-mail-desktop.src.outputHash)
 NEW_SRC_HASH=$(nix-prefetch-github ProtonMail WebClients --json --rev "proton-inbox-desktop@${NEW_VERSION}" | jq -r '.hash')
 
