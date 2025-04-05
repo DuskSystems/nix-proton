@@ -55,13 +55,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass-desktop";
-  version = "1.30.1.1";
+  version = "1.31.0.1";
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
     rev = "proton-pass@${finalAttrs.version}";
-    hash = "sha256-dHGSOqZODdq8S61sCPVnCEHnlMBzVDtsTNOtztiaVpg=";
+    hash = "sha256-Jk4zjMdTEtSo/X6MYoFkR75BwRYTxXWGNSYDT4umg9E=";
   };
 
   postPatch = ''
@@ -132,7 +132,7 @@ stdenv.mkDerivation (finalAttrs: {
       cargoRoot
       ;
 
-    hash = "sha256-evxA3M+QsT3abC6EFHfzEK4ZUbnuxFHuBuX4uNJuEKw=";
+    hash = "sha256-BJu75acPg9S4DhkG33OopHqyBKzBsg3WiD8wrtW2R9k=";
   };
 
   berryOfflineCache = fetchBerryDeps {
@@ -143,7 +143,7 @@ stdenv.mkDerivation (finalAttrs: {
       postPatch
       ;
 
-    hash = "sha256-PjYE+xdCBYCuX2q1CtlPiWsElsXwuTBIoXeaZ2l5b4Q=";
+    hash = "sha256-uRGq/51/kOczbHv02tmexvRTsJYfCrTpRf+/6DK1FFs=";
   };
 
   postConfigure = ''

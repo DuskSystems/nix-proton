@@ -4689,6 +4689,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/yjs@patch:@lexical/yjs@npm%3A0.24.0#~/.yarn/patches/@lexical-yjs-npm-0.24.0-dc3b72551f.patch":
+  version: 0.24.0
+  resolution: "@lexical/yjs@patch:@lexical/yjs@npm%3A0.24.0#~/.yarn/patches/@lexical-yjs-npm-0.24.0-dc3b72551f.patch::version=0.24.0&hash=02eb59"
+  dependencies:
+    "@lexical/offset": "npm:0.24.0"
+    "@lexical/selection": "npm:0.24.0"
+    lexical: "npm:0.24.0"
+  peerDependencies:
+    yjs: ">=13.5.22"
+  checksum: 10c0/99df2a2fcc334b3095541fca53656c857c88fa87d1abaa8e4c62dbc73393f0b602bdff122f97479d7a6486045ef8b8c7cbe178a2a529cf214c9a18930c3c028c
+  languageName: node
+  linkType: hard
+
 "@lukeed/ms@npm:^2.0.1":
   version: 2.0.2
   resolution: "@lukeed/ms@npm:2.0.2"
@@ -6981,6 +6994,7 @@ __metadata:
     jest: "npm:^29.7.0"
     libphonenumber-js: "npm:^1.11.19"
     linkify-it: "npm:^5.0.0"
+    lottie-react: "npm:^2.4.1"
     markdown-it: "npm:^14.1.0"
     prettier: "npm:^3.5.1"
     prop-types: "npm:^15.8.1"
@@ -7039,7 +7053,7 @@ __metadata:
     karma-jasmine: "npm:^5.1.0"
     karma-webkit-launcher: "npm:^2.6.0"
     karma-webpack: "npm:^5.0.1"
-    playwright: "npm:^1.50.1"
+    playwright: "npm:^1.51.1"
     pmcrypto: "npm:@protontech/pmcrypto@^8.3.0"
     prettier: "npm:^3.5.1"
     ts-loader: "npm:^9.5.2"
@@ -7053,7 +7067,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@proton/docs-core@workspace:packages/docs-core"
   dependencies:
-    "@lexical/yjs": "npm:0.24.0"
+    "@lexical/yjs": "patch:@lexical/yjs@npm%3A0.24.0#~/.yarn/patches/@lexical-yjs-npm-0.24.0-dc3b72551f.patch"
     "@proton/components": "workspace:^"
     "@proton/crypto": "workspace:^"
     "@proton/docs-proto": "workspace:^"
@@ -7112,7 +7126,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@proton/docs-shared@workspace:packages/docs-shared"
   dependencies:
-    "@lexical/yjs": "npm:0.24.0"
+    "@lexical/yjs": "patch:@lexical/yjs@npm%3A0.24.0#~/.yarn/patches/@lexical-yjs-npm-0.24.0-dc3b72551f.patch"
     "@proton/docs-proto": "workspace:^"
     "@proton/eslint-config-proton": "workspace:^"
     "@proton/jest-env": "workspace:^"
@@ -7154,6 +7168,7 @@ __metadata:
     "@proton/metrics": "workspace:^"
     "@proton/pack": "workspace:^"
     "@proton/polyfill": "workspace:^"
+    "@proton/raw-images": "workspace:^"
     "@proton/react-redux-store": "workspace:^"
     "@proton/redux-shared-store": "workspace:^"
     "@proton/redux-shared-store-types": "workspace:^"
@@ -7171,6 +7186,7 @@ __metadata:
     "@types/react-dom": "npm:^18.3.5"
     "@types/react-router-dom": "npm:^5.3.3"
     "@types/react-window": "npm:^1.8.8"
+    "@xmldom/xmldom": "npm:^0.9.8"
     babel-plugin-transform-class-properties: "npm:^6.24.1"
     babel-plugin-transform-require-context: "npm:^0.1.1"
     client-zip: "npm:^2.4.6"
@@ -7180,6 +7196,7 @@ __metadata:
     ejs-webpack-loader: "npm:^2.2.2"
     eslint: "npm:^8.57.1"
     exifreader: "npm:^4.26.1"
+    heic-to: "npm:^1.1.10"
     jest: "npm:^29.7.0"
     jest-junit: "npm:^16.0.0"
     jest-when: "npm:3.7.0"
@@ -7189,11 +7206,13 @@ __metadata:
     pretty-format: "npm:^29.7.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
+    react-router: "npm:^5.3.4"
     react-router-dom: "npm:^5.3.4"
+    react-router-dom-v5-compat: "npm:^6.29.0"
     react-window: "npm:^1.8.11"
     ttag: "npm:^1.8.7"
     typescript: "npm:^5.7.3"
-    web-streams-polyfill: "npm:^3.3.3"
+    web-streams-polyfill: "npm:^4.1.0"
     webpack: "npm:^5.98.0"
     zustand: "npm:^4.5.6"
   languageName: unknown
@@ -7220,7 +7239,7 @@ __metadata:
     karma-jasmine: "npm:^5.1.0"
     karma-spec-reporter: "npm:^0.0.36"
     karma-webpack: "npm:^5.0.1"
-    playwright: "npm:^1.50.1"
+    playwright: "npm:^1.51.1"
     react: "npm:^18.3.1"
     ts-loader: "npm:^9.5.2"
     ttag: "npm:^1.8.7"
@@ -7350,7 +7369,7 @@ __metadata:
     karma-jasmine: "npm:^5.1.0"
     karma-webpack: "npm:^5.0.1"
     pkijs: "npm:^3.2.4"
-    playwright: "npm:^1.50.1"
+    playwright: "npm:^1.51.1"
     ts-loader: "npm:^9.5.2"
     typescript: "npm:^5.7.3"
     webpack: "npm:^5.98.0"
@@ -7510,9 +7529,12 @@ __metadata:
     "@types/react-dom": "npm:^18.3.5"
     "@types/react-router-dom": "npm:^5.3.3"
     "@types/webextension-polyfill": "npm:^0.12.1"
+    "@zip.js/zip.js": "npm:^2.7.57"
     circular-dependency-plugin: "npm:^5.2.2"
+    client-zip: "npm:^2.4.6"
     cross-env: "npm:^7.0.3"
     eslint: "npm:^8.57.1"
+    fake-indexeddb: "npm:^6.0.0"
     formik: "npm:^2.4.6"
     idb: "npm:^8.0.2"
     imask: "npm:^7.6.1"
@@ -7571,6 +7593,12 @@ __metadata:
     eslint: "npm:^8.57.1"
     regenerator-runtime: "npm:^0.14.1"
     resize-observer: "npm:^1.0.4"
+  languageName: unknown
+  linkType: soft
+
+"@proton/raw-images@workspace:^, @proton/raw-images@workspace:packages/raw-images":
+  version: 0.0.0-use.local
+  resolution: "@proton/raw-images@workspace:packages/raw-images"
   languageName: unknown
   linkType: soft
 
@@ -7702,7 +7730,7 @@ __metadata:
     karma-webpack: "npm:^5.0.1"
     lodash: "npm:^4.17.21"
     papaparse: "npm:^5.5.2"
-    playwright: "npm:^1.50.1"
+    playwright: "npm:^1.51.1"
     prettier: "npm:^3.5.1"
     ts-loader: "npm:^9.5.2"
     ttag: "npm:^1.8.7"
@@ -12685,6 +12713,13 @@ __metadata:
   version: 1.1.0
   resolution: "@yarnpkg/lockfile@npm:1.1.0"
   checksum: 10c0/0bfa50a3d756623d1f3409bc23f225a1d069424dbc77c6fd2f14fb377390cd57ec703dc70286e081c564be9051ead9ba85d81d66a3e68eeb6eb506d4e0c0fbda
+  languageName: node
+  linkType: hard
+
+"@zip.js/zip.js@npm:^2.7.57":
+  version: 2.7.57
+  resolution: "@zip.js/zip.js@npm:2.7.57"
+  checksum: 10c0/fdb25fc5e9a78992ee61dae382a8ea54cdaeefe6d48e583df52218b0316bf8cc0cf91eb02898237cd91d27d417c90f0022b396abf129784306b5dad94da0f49a
   languageName: node
   linkType: hard
 
@@ -24869,6 +24904,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"idb-keyval@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "idb-keyval@npm:6.2.1"
+  checksum: 10c0/9f0c83703a365e00bd0b4ed6380ce509a06dedfc6ec39b2ba5740085069fd2f2ff5c14ba19356488e3612a2f9c49985971982d836460a982a5d0b4019eeba48a
+  languageName: node
+  linkType: hard
+
 "idb@npm:^7.0.1":
   version: 7.1.1
   resolution: "idb@npm:7.1.1"
@@ -28490,6 +28532,25 @@ __metadata:
   bin:
     loose-envify: cli.js
   checksum: 10c0/655d110220983c1a4b9c0c679a2e8016d4b67f6e9c7b5435ff5979ecdb20d0813f4dec0a08674fcbdd4846a3f07edbb50a36811fd37930b94aaa0d9daceb017e
+  languageName: node
+  linkType: hard
+
+"lottie-react@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "lottie-react@npm:2.4.1"
+  dependencies:
+    lottie-web: "npm:^5.10.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/7f6a0a2cf2af25deabe7b4d4c9917e47d12016673613c59dcdd8ef52e10e914dd0c1f71d4a275d56aaba03fe9d85b333087f7c8d40a8f967ece4a0444c7a3cdf
+  languageName: node
+  linkType: hard
+
+"lottie-web@npm:^5.10.2":
+  version: 5.12.2
+  resolution: "lottie-web@npm:5.12.2"
+  checksum: 10c0/0aeaf631b10a76afd025df70c2a1486543530708e07a316946c08e55891dac483ffbaf2bf3648ae0b9c54c733118a0a086fd150aa76f7848606214c67ad72c30
   languageName: node
   linkType: hard
 
@@ -32243,27 +32304,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.50.1":
-  version: 1.50.1
-  resolution: "playwright-core@npm:1.50.1"
+"playwright-core@npm:1.51.1":
+  version: 1.51.1
+  resolution: "playwright-core@npm:1.51.1"
   bin:
     playwright-core: cli.js
-  checksum: 10c0/c158764257d870897c31807a830ddcc3f5aaf4376719e05aeada3489a01f751650b2dc43e027201a40405a1b075084e89f58cd3730a985a229efe9d8cecfe360
+  checksum: 10c0/4f004d9dea5ecbd76b84c858fa4880ed955600b6cda972a3e8093ea47e150ce20bf2ea806e73e740497d34f4b61b080c208339a661fc75ad04d8f00bedcc21e0
   languageName: node
   linkType: hard
 
-"playwright@npm:^1.50.1":
-  version: 1.50.1
-  resolution: "playwright@npm:1.50.1"
+"playwright@npm:^1.51.1":
+  version: 1.51.1
+  resolution: "playwright@npm:1.51.1"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.50.1"
+    playwright-core: "npm:1.51.1"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10c0/b292ee6e0d122748a3d024b85ace86a0d9c848fc4121685d90ffc5d43d6bcf13ed7dc7488b1055f69040599c420052306ccba6fabfe2f69a15fc109c55171207
+  checksum: 10c0/2aea553b8b1086ee419e72c9d4f4117686e6bdb5e09e0f47dfe563ce0f0bd79c4ee79dd9c8a0f023a2fb7803b81d4fdc552887410d16c036be07f21ab72b3f46
   languageName: node
   linkType: hard
 
@@ -33577,11 +33638,10 @@ __metadata:
     "@lexical/selection": "npm:0.24.0"
     "@lexical/table": "npm:0.24.0"
     "@lexical/utils": "npm:0.24.0"
-    "@lexical/yjs": "npm:0.24.0"
+    "@lexical/yjs": "patch:@lexical/yjs@npm%3A0.24.0#~/.yarn/patches/@lexical-yjs-npm-0.24.0-dc3b72551f.patch"
     "@proton/atoms": "workspace:^"
     "@proton/components": "workspace:^"
     "@proton/crypto": "workspace:^"
-    "@proton/docs-core": "workspace:^"
     "@proton/docs-shared": "workspace:^"
     "@proton/eslint-config-proton": "workspace:^"
     "@proton/hooks": "workspace:^"
@@ -33629,9 +33689,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "proton-docs@workspace:applications/docs"
   dependencies:
+    "@babel/plugin-transform-private-methods": "npm:^7.25.9"
     "@babel/preset-typescript": "npm:^7.26.0"
     "@lexical/utils": "npm:0.24.0"
-    "@lexical/yjs": "npm:0.24.0"
+    "@lexical/yjs": "patch:@lexical/yjs@npm%3A0.24.0#~/.yarn/patches/@lexical-yjs-npm-0.24.0-dc3b72551f.patch"
     "@proton/account": "workspace:^"
     "@proton/atoms": "workspace:^"
     "@proton/components": "workspace:^"
@@ -33673,6 +33734,7 @@ __metadata:
     babel-plugin-transform-require-context: "npm:^0.1.1"
     buffer: "npm:^6.0.3"
     cross-env: "npm:^7.0.3"
+    ejs-webpack-loader: "npm:^2.2.2"
     eslint: "npm:^8.57.1"
     eslint-plugin-react-hooks: "npm:^4.6.2"
     eslint-plugin-react-refresh: "npm:^0.4.19"
@@ -33690,6 +33752,7 @@ __metadata:
     tailwindcss: "npm:^3.4.17"
     ttag: "npm:^1.8.7"
     typescript: "npm:^5.7.3"
+    webpack: "npm:^5.98.0"
     yjs: "npm:^13.6.15"
   languageName: unknown
   linkType: soft
@@ -33716,6 +33779,7 @@ __metadata:
     "@proton/metrics": "workspace:^"
     "@proton/pack": "workspace:^"
     "@proton/polyfill": "workspace:^"
+    "@proton/raw-images": "workspace:^"
     "@proton/react-redux-store": "workspace:^"
     "@proton/redux-shared-store": "workspace:^"
     "@proton/redux-shared-store-types": "workspace:^"
@@ -33742,6 +33806,7 @@ __metadata:
     eslint: "npm:^8.57.1"
     exifreader: "npm:^4.26.1"
     heic-to: "npm:^1.1.10"
+    idb-keyval: "npm:^6.2.1"
     jest: "npm:^29.7.0"
     jest-junit: "npm:^16.0.0"
     jest-when: "npm:3.7.0"
