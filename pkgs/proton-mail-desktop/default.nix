@@ -56,7 +56,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
-    rev = "proton-inbox-desktop@${finalAttrs.version}";
+    rev = "release/inbox-desktop@${finalAttrs.version}";
     hash = "sha256-wsjP8S14Z+mbPaxiTE3AeT55TbJVlgG1oT+2QvOMs/4=";
   };
 
