@@ -12,13 +12,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass-firefox";
-  version = "1.31.0.1";
+  version = "1.31.0.2";
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
     rev = "proton-pass@${finalAttrs.version}";
-    hash = "sha256-Jk4zjMdTEtSo/X6MYoFkR75BwRYTxXWGNSYDT4umg9E=";
+    hash = "sha256-YJ+rNydrmWuHYqx9HAHx/PIeUPQ048YGm4CNU50temM=";
   };
 
   postPatch = ''
