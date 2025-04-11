@@ -15,14 +15,14 @@ if [ "$NEW_VERSION" = "null" ]; then
 fi
 
 OLD_SRC_HASH=$(nix eval --raw .#proton-mail-desktop.src.outputHash)
-NEW_SRC_HASH=$(nix-prefetch-github ProtonMail WebClients --json --rev "proton-inbox-desktop@${NEW_VERSION}" | jq -r '.hash')
+NEW_SRC_HASH=$(nix-prefetch-github ProtonMail WebClients --json --rev "release/inbox-desktop@${NEW_VERSION}" | jq -r '.hash')
 
 OLD_BERRY_HASH=$(nix eval --raw .#proton-mail-desktop.berryOfflineCache.outputHash)
 TEMP_DIR=$(mktemp -d)
 pushd "$TEMP_DIR"
 git clone https://github.com/ProtonMail/WebClients.git
 cd WebClients
-git checkout "proton-inbox-desktop@$NEW_VERSION"
+git checkout "release/inbox-desktop@$NEW_VERSION"
 
 yarn install --refresh-lockfile --no-immutable
 NEW_BERRY_HASH=$(prefetch-berry-deps yarn.lock)
