@@ -1,3 +1,5 @@
+[![sync](https://github.com/DuskSystems/nix-proton/actions/workflows/sync.yml/badge.svg)](https://github.com/DuskSystems/nix-proton/actions/workflows/sync.yml)
+
 # `nix-proton`
 
 Nix expressions for Proton applications and extensions, built from source.
