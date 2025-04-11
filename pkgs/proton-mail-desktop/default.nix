@@ -57,7 +57,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "ProtonMail";
     repo = "WebClients";
     rev = "release/inbox-desktop@${finalAttrs.version}";
-    hash = "sha256-wsjP8S14Z+mbPaxiTE3AeT55TbJVlgG1oT+2QvOMs/4=";
+    hash = "sha256-FZrvM4IPqRwp5/g6Bsaeu8y1MctlLIJ+pYz6RWikO8w=";
   };
 
   postPatch = ''
@@ -129,7 +129,7 @@ stdenv.mkDerivation (finalAttrs: {
       postPatch
       ;
 
-    hash = "sha256-9wc948jbnvuRVH62hPgJ9mHXrvhq7FzXBuvpoAcCXvc=";
+    hash = "sha256-CP6Pu0PQjerjEQXhy9dL3CEMxY+nnRjoh4JVpqbnswc=";
   };
 
   postConfigure = ''
