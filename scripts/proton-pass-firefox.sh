@@ -5,19 +5,17 @@ PACKAGE="./pkgs/proton-pass-firefox/default.nix"
 BERRY_LOCK="./pkgs/proton-pass-firefox/yarn.lock"
 
 OLD_VERSION=$(nix eval --raw .#proton-pass-firefox.version)
-NEW_VERSION=$(curl "https://api.github.com/repos/ProtonMail/WebClients/git/refs/tags" | jq -r '[.[] | select(.ref | contains("proton-pass@")) | .ref | split("/")[2] | split("proton-pass@")[1] | select(contains("-") | not)] | sort | last')
-if [ "$OLD_VERSION" = "$NEW_VERSION" ]; then
-  exit 0
-fi
-
-if [ "$NEW_VERSION" = "null" ]; then
-  exit 0
-fi
-
 OLD_SRC_HASH=$(nix eval --raw .#proton-pass-firefox.src.outputHash)
+
+NEW_VERSION=$(curl "https://api.github.com/repos/ProtonMail/WebClients/git/refs/tags" | jq -r '[.[] | select(.ref | contains("proton-pass@")) | .ref | split("/")[2] | split("proton-pass@")[1] | select(contains("-") | not)] | sort | last')
 NEW_SRC_HASH=$(nix-prefetch-github ProtonMail WebClients --json --rev "proton-pass@${NEW_VERSION}" | jq -r '.hash')
 
+if [ "$OLD_VERSION" = "$NEW_VERSION" ] && [ "$OLD_SRC_HASH" = "$NEW_SRC_HASH" ]; then
+  exit 0
+fi
+
 OLD_BERRY_HASH=$(nix eval --raw .#proton-pass-firefox.berryOfflineCache.outputHash)
+
 TEMP_DIR=$(mktemp -d)
 pushd "$TEMP_DIR"
 git clone https://github.com/ProtonMail/WebClients.git

@@ -4,19 +4,17 @@ set -euxo pipefail
 PACKAGE="./pkgs/proton-vpn-firefox/default.nix"
 
 OLD_VERSION=$(nix eval --raw .#proton-vpn-firefox.version)
-NEW_VERSION=$(curl "https://api.github.com/repos/ProtonVPN/proton-vpn-browser-extension/commits/main" | jq -r '.sha')
-if [ "$OLD_VERSION" = "$NEW_VERSION" ]; then
-  exit 0
-fi
-
-if [ "$NEW_VERSION" = "null" ]; then
-  exit 0
-fi
-
 OLD_SRC_HASH=$(nix eval --raw .#proton-vpn-firefox.src.outputHash)
+
+NEW_VERSION=$(curl "https://api.github.com/repos/ProtonVPN/proton-vpn-browser-extension/commits/main" | jq -r '.sha')
 NEW_SRC_HASH=$(nix-prefetch-github ProtonVPN proton-vpn-browser-extension --json --rev "$NEW_VERSION" | jq -r '.hash')
 
+if [ "$OLD_VERSION" = "$NEW_VERSION" ] && [ "$OLD_SRC_HASH" = "$NEW_SRC_HASH" ]; then
+  exit 0
+fi
+
 OLD_NPM_HASH=$(nix eval --raw .#proton-vpn-firefox.npmDeps.outputHash)
+
 TEMP_DIR=$(mktemp -d)
 pushd "$TEMP_DIR"
 git clone https://github.com/ProtonVPN/proton-vpn-browser-extension.git

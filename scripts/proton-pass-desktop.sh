@@ -6,17 +6,14 @@ BERRY_LOCK="./pkgs/proton-pass-desktop/yarn.lock"
 CARGO_LOCK="./pkgs/proton-pass-desktop/Cargo.lock"
 
 OLD_VERSION=$(nix eval --raw .#proton-pass-desktop.version)
-NEW_VERSION=$(curl "https://api.github.com/repos/ProtonMail/WebClients/git/refs/tags" | jq -r '[.[] | select(.ref | contains("proton-pass@")) | .ref | split("/")[2] | split("proton-pass@")[1] | select(contains("-") | not)] | sort | last')
-if [ "$OLD_VERSION" = "$NEW_VERSION" ]; then
-  exit 0
-fi
-
-if [ "$NEW_VERSION" = "null" ]; then
-  exit 0
-fi
-
 OLD_SRC_HASH=$(nix eval --raw .#proton-pass-desktop.src.outputHash)
+
+NEW_VERSION=$(curl "https://api.github.com/repos/ProtonMail/WebClients/git/refs/tags" | jq -r '[.[] | select(.ref | contains("proton-pass@")) | .ref | split("/")[2] | split("proton-pass@")[1] | select(contains("-") | not)] | sort | last')
 NEW_SRC_HASH=$(nix-prefetch-github ProtonMail WebClients --json --rev "proton-pass@${NEW_VERSION}" | jq -r '.hash')
+
+if [ "$OLD_VERSION" = "$NEW_VERSION" ] && [ "$OLD_SRC_HASH" = "$NEW_SRC_HASH" ]; then
+  exit 0
+fi
 
 OLD_BERRY_HASH=$(nix eval --raw .#proton-pass-desktop.berryOfflineCache.outputHash)
 OLD_CARGO_HASH=$(nix eval --raw .#proton-pass-desktop.cargoDeps.vendorStaging.outputHash)
