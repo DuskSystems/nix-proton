@@ -23,80 +23,95 @@ jobs:
         with:
           persist-credentials: true
 
-      - name: Free space
-        run: |
-          set -euxo pipefail
-
-          sudo free -h
-          sudo swapon --show
-          sudo df -h
-
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo docker image prune --all --force
-
-          sudo free -h
-          sudo swapon --show
-          sudo df -h
+      # - name: Free space
+      #   run: |
+      #     set -euxo pipefail
+      #
+      #     df -h
+      #     sudo apt-get purge --auto-remove -y dotnet-* gcc-* cpp-* google-chrome-* microsoft-edge-* mysql-* php* ruby* golang* perl* podman* postgresql* firefox* r-base* r-cran-*
+      #     sudo rm -rf /opt/ghc
+      #     sudo rm -rf /opt/hostedtoolcache/CodeQL
+      #     sudo rm -rf /usr/local/aws-cli
+      #     sudo rm -rf /usr/local/aws-sam-cli
+      #     sudo rm -rf /usr/local/go
+      #     sudo rm -rf /usr/local/lib/R
+      #     sudo rm -rf /usr/local/lib/android
+      #     sudo rm -rf /usr/local/lib/nodejs
+      #     sudo rm -rf /usr/share/doc
+      #     sudo rm -rf /usr/share/dotnet
+      #     sudo rm -rf /usr/share/locale
+      #     sudo rm -rf /usr/share/man
+      #     sudo rm -rf /var/cache/apt/archives
+      #     sudo docker system prune --all --force
+      #     df -h
 
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v30
 
-      - name: Cache Nix
-        uses: nix-community/cache-nix-action@v6
-        with:
-          primary-key: nix-sync-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
-          restore-prefixes-first-match: nix-sync-${{ runner.os }}-${{ runner.arch }}-
-
-      - name: Sync updates
+      - name: Check space
         shell: nix develop --command bash {0}
         run: |
           set -euxo pipefail
-          ./scripts/proton-mail-desktop.sh
-          ./scripts/proton-pass-desktop.sh
-          ./scripts/proton-pass-firefox.sh
-          ./scripts/proton-vpn-firefox.sh
+          echo "dust dirs top 50"
+          dust -D -n 50 /
+          echo "dust files top 50"
+          dust -F -n 50 /
+          echo "apt top 50"
+          dpigs -n 50 -H
 
-      - name: Push changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git add .
-            git commit -m "$(date --utc --rfc-email)"
-            git push
-          fi
+      # - name: Cache Nix
+      #   uses: nix-community/cache-nix-action@v6
+      #   with:
+      #     primary-key: nix-sync-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
+      #     restore-prefixes-first-match: nix-sync-${{ runner.os }}-${{ runner.arch }}-
 
-  test:
-    needs: sync
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: ubuntu-24.04
-          - runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
+      # - name: Sync updates
+      #   shell: nix develop --command bash {0}
+      #   run: |
+      #     set -euxo pipefail
+      #     ./scripts/proton-mail-desktop.sh
+      #     ./scripts/proton-pass-desktop.sh
+      #     ./scripts/proton-pass-firefox.sh
+      #     ./scripts/proton-vpn-firefox.sh
 
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v30
+      # - name: Push changes
+      #   run: |
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #     if [[ -n "$(git status --porcelain)" ]]; then
+      #       git add .
+      #       git commit -m "$(date --utc --rfc-email)"
+      #       git push
+      #     fi
 
-      - name: Cache Nix
-        uses: nix-community/cache-nix-action@v6
-        with:
-          primary-key: nix-test-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
-          restore-prefixes-first-match: nix-test-${{ runner.os }}-${{ runner.arch }}-
+  # test:
+  #   needs: sync
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - runner: ubuntu-24.04
+  #         - runner: ubuntu-24.04-arm
+  #   runs-on: ${{ matrix.runner }}
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         persist-credentials: false
 
-      - name: Test builds
-        run: |
-          set -euxo pipefail
-          nix build .#proton-mail-desktop
-          nix build .#proton-pass-desktop
-          nix build .#proton-pass-firefox
-          nix build .#proton-vpn-firefox
+  #     - name: Install Nix
+  #       uses: nixbuild/nix-quick-install-action@v30
+
+  #     - name: Cache Nix
+  #       uses: nix-community/cache-nix-action@v6
+  #       with:
+  #         primary-key: nix-test-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
+  #         restore-prefixes-first-match: nix-test-${{ runner.os }}-${{ runner.arch }}-
+
+  #     - name: Test builds
+  #       run: |
+  #         set -euxo pipefail
+  #         nix build .#proton-mail-desktop
+  #         nix build .#proton-pass-desktop
+  #         nix build .#proton-pass-firefox
+  #         nix build .#proton-vpn-firefox

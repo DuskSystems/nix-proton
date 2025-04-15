@@ -94,6 +94,10 @@
             fetch-cargo-vendor-util
             cargo
 
+            # FIXME
+            dust
+            debian-goodies
+
             # Nix
             nixfmt-rfc-style
             nixd
