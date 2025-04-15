@@ -20,6 +20,7 @@ pushd "$TEMP_DIR"
 git clone https://github.com/ProtonVPN/proton-vpn-browser-extension.git
 cd proton-vpn-browser-extension
 git checkout "$NEW_VERSION"
+rm -rf .git
 
 NEW_NPM_HASH=$(prefetch-npm-deps package-lock.json)
 

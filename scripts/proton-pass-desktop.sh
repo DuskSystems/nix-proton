@@ -23,6 +23,7 @@ pushd "$TEMP_DIR"
 git clone https://github.com/ProtonMail/WebClients.git
 cd WebClients
 git checkout "proton-pass@$NEW_VERSION"
+rm -rf .git
 
 yarn install --refresh-lockfile --no-immutable
 NEW_BERRY_HASH=$(prefetch-berry-deps yarn.lock)
