@@ -66,8 +66,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   postPatch = ''
     cp ${./yarn.lock} yarn.lock
-    cp ${./Cargo.lock} applications/pass-desktop/native/Cargo.lock
-
     patchShebangs .
   '';
 
@@ -155,9 +153,7 @@ stdenv.mkDerivation (finalAttrs: {
     # Except we only build a native release for the current platform.
     pushd applications/pass-desktop
 
-    # Fix clipboard on Wayland.
     pushd native
-    cargo add arboard --features wayland-data-control
     yarn build
     popd
 

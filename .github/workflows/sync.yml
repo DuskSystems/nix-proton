@@ -13,6 +13,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   sync:
@@ -26,31 +27,71 @@ jobs:
       - name: Free space
         run: |
           set -euxo pipefail
+
+          echo "[BEFORE]"
           sudo df --human-readable
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo rm -rf /usr/local/aws-cli
-          sudo rm -rf /usr/local/aws-sam-cli
-          sudo rm -rf /usr/local/go
-          sudo rm -rf /usr/local/lib/R
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/local/lib/nodejs
-          sudo rm -rf /usr/share/doc
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/share/locale
-          sudo rm -rf /usr/share/man
-          sudo rm -rf /var/cache/apt/archives
-          sudo docker system prune --all --force
+
+          sudo apt-get purge --yes \
+            azure-cli \
+            containerd.io \
+            containernetworking-plugins \
+            docker-ce \
+            docker-ce-cli \
+            dotnet-sdk-* \
+            firefox \
+            gh \
+            google-chrome-stable \
+            google-cloud-cli \
+            kubectl \
+            libllvm* \
+            linux-azure-* \
+            linux-modules-*-azure \
+            llvm-*-dev \
+            microsoft-edge-stable \
+            mysql-client-core-* \
+            mysql-server-core-* \
+            openjdk-*-jre-headless \
+            php* \
+            podman \
+            powershell \
+            python3-botocore \
+            ruby* \
+            shellcheck \
+            skopeo \
+            snapd \
+            temurin-*-jdk \
+            vim-runtime
+
+          sudo apt-get autoremove --yes
+          sudo apt-get clean
+
+          sudo rm -rf \
+            /opt/ghc \
+            /opt/hostedtoolcache \
+            /usr/local/.ghcup \
+            /usr/local/aws-cli \
+            /usr/local/aws-sam-cli \
+            /usr/local/go \
+            /usr/local/graalvm \
+            /usr/local/lib/R \
+            /usr/local/lib/android \
+            /usr/local/lib/node_modules \
+            /usr/local/lib/nodejs \
+            /usr/local/share/boost \
+            /usr/local/share/chromium \
+            /usr/local/share/powershell \
+            /usr/share/doc \
+            /usr/share/dotnet \
+            /usr/share/locale \
+            /usr/share/man \
+            /usr/share/swift \
+            /var/cache/apt/archives
+
+          echo "[AFTER]"
           sudo df --human-readable
 
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v30
-
-      - name: Cache Nix
-        uses: nix-community/cache-nix-action@v6
-        with:
-          primary-key: nix-sync-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
-          restore-prefixes-first-match: nix-sync-${{ runner.os }}-${{ runner.arch }}-
 
       - name: Sync updates
         shell: nix develop --command bash {0}
@@ -62,6 +103,7 @@ jobs:
           ./scripts/proton-vpn-firefox.sh
 
       - name: Push changes
+        id: push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -69,36 +111,20 @@ jobs:
             git add .
             git commit -m "$(date --utc --rfc-email)"
             git push
+            echo "pushed=true" >> $GITHUB_OUTPUT
+          else
+            echo "pushed=false" >> $GITHUB_OUTPUT
           fi
 
-  test:
-    needs: sync
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: ubuntu-24.04
-          - runner: ubuntu-24.04-arm
-    runs-on: ${{ matrix.runner }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Trigger test workflow
+        if: steps.push.outputs.pushed == 'true'
+        uses: actions/github-script@v7
         with:
-          persist-credentials: false
-
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v30
-
-      - name: Cache Nix
-        uses: nix-community/cache-nix-action@v6
-        with:
-          primary-key: nix-test-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/*.nix', '**/flake.lock') }}
-          restore-prefixes-first-match: nix-test-${{ runner.os }}-${{ runner.arch }}-
-
-      - name: Test builds
-        run: |
-          set -euxo pipefail
-          nix build .#proton-mail-desktop
-          nix build .#proton-pass-desktop
-          nix build .#proton-pass-firefox
-          nix build .#proton-vpn-firefox
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'test.yml',
+              ref: 'main'
+            });
