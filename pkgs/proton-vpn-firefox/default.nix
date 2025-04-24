@@ -31,8 +31,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   npmDeps = fetchNpmDeps {
     inherit (finalAttrs)
-      pname
-      version
       src
       postPatch
       ;

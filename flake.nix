@@ -40,13 +40,6 @@
             forgeConfigHook
             ;
 
-          fetch-berry-deps = prev.callPackage pkgs/fetch-berry-deps { };
-          inherit (final.fetch-berry-deps)
-            fetchBerryDeps
-            prefetch-berry-deps
-            berryConfigHook
-            ;
-
           fetch-cargo-vendor-util = prev.writers.writePython3Bin "fetch-cargo-vendor-util" {
             libraries = with prev.python3Packages; [
               requests
@@ -86,11 +79,12 @@
             curl
             jq
             gnused
+            nix-prefetch-git
             nix-prefetch-github
             prefetch-npm-deps
-            prefetch-berry-deps
             nodejs
-            yarn-berry
+            yarn-berry_4
+            yarn-berry_4.yarn-berry-fetcher
             fetch-cargo-vendor-util
             cargo
 

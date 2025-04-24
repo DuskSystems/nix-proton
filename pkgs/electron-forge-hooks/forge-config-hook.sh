@@ -14,14 +14,16 @@ forgeConfigHook() {
     exit 1
   fi
 
-  mkdir -p "$TMP/home"
-  export HOME="$TMP/home"
-
   export ELECTRON_CUSTOM_VERSION="@electronVersion@"
   ZIP_NAME="@zipName@"
   ZIP_HASH=$(echo -n "https://github.com/electron/electron/releases/download/v$ELECTRON_CUSTOM_VERSION" | sha256sum | cut -d ' ' -f 1)
 
-  CACHE_DIR="$HOME/.cache/electron/$ZIP_HASH"
+  if [ ! -d "$XDG_CACHE_HOME" ]; then
+    export XDG_CACHE_HOME="$(mktemp -d)"
+    mkdir -p "$XDG_CACHE_HOME"
+  fi
+
+  CACHE_DIR="$XDG_CACHE_HOME/electron/$ZIP_HASH"
   mkdir -p "$CACHE_DIR"
 
   ELECTRON_TMP=$(mktemp -d)
