@@ -2,11 +2,9 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchBerryDeps,
 
-  berryConfigHook,
+  yarn-berry_4,
   nodejs,
-  yarn-berry,
 
   forgeConfigHook,
   electron,
@@ -61,8 +59,6 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postPatch = ''
-    cp ${./yarn.lock} yarn.lock
-
     # Fix hardcoded desktop file path.
     substituteInPlace applications/inbox-desktop/src/utils/protocol/default_mailto_linux.ts \
       --replace-fail "/usr/share/applications" "$out/share/applications"
@@ -75,9 +71,9 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   nativeBuildInputs = [
-    berryConfigHook
+    yarn-berry_4.yarnBerryConfigHook
+    yarn-berry_4
     nodejs
-    yarn-berry
 
     forgeConfigHook
     electron
@@ -121,15 +117,19 @@ stdenv.mkDerivation (finalAttrs: {
     systemd
   ];
 
-  berryOfflineCache = fetchBerryDeps {
+  env = {
+    YARN_ENABLE_SCRIPTS = "0";
+  };
+
+  missingHashes = ./missing-hashes.json;
+  offlineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
-      pname
-      version
       src
       postPatch
+      missingHashes
       ;
 
-    hash = "sha256-CP6Pu0PQjerjEQXhy9dL3CEMxY+nnRjoh4JVpqbnswc=";
+    hash = "sha256-IIxgYuAtpuDya+KJWDM28xMfRzrhjrKkkxX+Bq9q1zo=";
   };
 
   postConfigure = ''

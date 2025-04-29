@@ -2,15 +2,13 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchBerryDeps,
 
   rustPlatform,
   rustc,
   cargo,
 
-  berryConfigHook,
+  yarn-berry_4,
   nodejs,
-  yarn-berry,
 
   forgeConfigHook,
   electron,
@@ -65,7 +63,6 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postPatch = ''
-    cp ${./yarn.lock} yarn.lock
     patchShebangs .
   '';
 
@@ -74,9 +71,9 @@ stdenv.mkDerivation (finalAttrs: {
     rustc
     cargo
 
-    berryConfigHook
+    yarn-berry_4.yarnBerryConfigHook
+    yarn-berry_4
     nodejs
-    yarn-berry
 
     forgeConfigHook
     electron
@@ -120,11 +117,13 @@ stdenv.mkDerivation (finalAttrs: {
     systemd
   ];
 
+  env = {
+    YARN_ENABLE_SCRIPTS = "0";
+  };
+
   cargoRoot = "applications/pass-desktop/native";
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs)
-      pname
-      version
       src
       postPatch
       cargoRoot
@@ -133,15 +132,15 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-s4z+HLRBWpOkMXNPZjZRhHyPhTX/iu5ZGYUTJ10TNrg=";
   };
 
-  berryOfflineCache = fetchBerryDeps {
+  missingHashes = ./missing-hashes.json;
+  offlineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
-      pname
-      version
       src
       postPatch
+      missingHashes
       ;
 
-    hash = "sha256-koMMtmMUEGMKC8WwfWxJQR97o4UWZkFV6yhvvuq4twQ=";
+    hash = "sha256-qcd0KSZBdLyCMXWxVBk0kwtwfDEklxSZ2GStPLb/ct0=";
   };
 
   postConfigure = ''

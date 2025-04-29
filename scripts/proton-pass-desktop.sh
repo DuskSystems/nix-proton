@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 PACKAGE="./pkgs/proton-pass-desktop/default.nix"
-BERRY_LOCK="./pkgs/proton-pass-desktop/yarn.lock"
+MISSING_HASHES="./pkgs/proton-pass-desktop/missing-hashes.json"
 
 OLD_VERSION=$(nix eval --raw .#proton-pass-desktop.version)
 OLD_SRC_HASH=$(nix eval --raw .#proton-pass-desktop.src.outputHash)
@@ -14,7 +14,7 @@ if [ "$OLD_VERSION" = "$NEW_VERSION" ] && [ "$OLD_SRC_HASH" = "$NEW_SRC_HASH" ];
   exit 0
 fi
 
-OLD_BERRY_HASH=$(nix eval --raw .#proton-pass-desktop.berryOfflineCache.outputHash)
+OLD_BERRY_HASH=$(nix eval --raw .#proton-pass-desktop.offlineCache.outputHash)
 OLD_CARGO_HASH=$(nix eval --raw .#proton-pass-desktop.cargoDeps.vendorStaging.outputHash)
 
 TEMP_DIR=$(mktemp -d)
@@ -24,8 +24,8 @@ cd WebClients
 git checkout "proton-pass@$NEW_VERSION"
 rm -rf .git
 
-yarn install --refresh-lockfile --no-immutable
-NEW_BERRY_HASH=$(prefetch-berry-deps yarn.lock)
+yarn-berry-fetcher missing-hashes yarn.lock | tee missing-hashes.json
+NEW_BERRY_HASH=$(yarn-berry-fetcher prefetch yarn.lock missing-hashes.json)
 
 cd applications/pass-desktop/native
 fetch-cargo-vendor-util create-vendor-staging Cargo.lock vendor
@@ -33,8 +33,8 @@ NEW_CARGO_HASH=$(nix-hash --type sha256 --sri vendor)
 
 popd
 
-rm "$BERRY_LOCK"
-cp "$TEMP_DIR/WebClients/yarn.lock" "$BERRY_LOCK"
+rm -f "$MISSING_HASHES"
+cp "$TEMP_DIR/WebClients/missing-hashes.json" "$MISSING_HASHES"
 
 sed -i "s|$OLD_VERSION|$NEW_VERSION|g" "$PACKAGE"
 sed -i "s|$OLD_SRC_HASH|$NEW_SRC_HASH|g" "$PACKAGE"

@@ -2,10 +2,10 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  fetchBerryDeps,
-  berryConfigHook,
+
+  yarn-berry_4,
   nodejs,
-  yarn-berry,
+
   zip,
   jq,
 }:
@@ -22,27 +22,31 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   postPatch = ''
-    cp ${./yarn.lock} yarn.lock
     patchShebangs .
   '';
 
   nativeBuildInputs = [
-    berryConfigHook
+    yarn-berry_4.yarnBerryConfigHook
+    yarn-berry_4
     nodejs
-    yarn-berry
+
     zip
     jq
   ];
 
-  berryOfflineCache = fetchBerryDeps {
+  env = {
+    YARN_ENABLE_SCRIPTS = "0";
+  };
+
+  missingHashes = ./missing-hashes.json;
+  offlineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
-      pname
-      version
       src
       postPatch
+      missingHashes
       ;
 
-    hash = "sha256-koMMtmMUEGMKC8WwfWxJQR97o4UWZkFV6yhvvuq4twQ=";
+    hash = "sha256-qcd0KSZBdLyCMXWxVBk0kwtwfDEklxSZ2GStPLb/ct0=";
   };
 
   buildPhase = ''
