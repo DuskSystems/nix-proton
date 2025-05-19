@@ -96,13 +96,34 @@ jobs:
         uses: nixbuild/nix-quick-install-action@v30
 
       - name: Sync updates
+        id: sync
         shell: nix develop --command bash {0}
         run: |
-          set -euxo pipefail
-          ./scripts/proton-mail-desktop.sh
-          ./scripts/proton-pass-desktop.sh
-          ./scripts/proton-pass-firefox.sh
-          ./scripts/proton-vpn-firefox.sh
+          set -uxo pipefail
+
+          FAILED=0
+
+          ./scripts/proton-mail-desktop.sh || {
+            echo "failed to sync: proton-mail-desktop"
+            FAILED=1
+          }
+
+          ./scripts/proton-pass-desktop.sh || {
+            echo "failed to sync: proton-pass-desktop"
+            FAILED=1
+          }
+
+          ./scripts/proton-pass-firefox.sh || {
+            echo "failed to sync: proton-pass-firefox"
+            FAILED=1
+          }
+
+          ./scripts/proton-vpn-firefox.sh || {
+            echo "failed to sync: proton-vpn-firefox"
+            FAILED=1
+          }
+
+          echo "any_failed=$FAILED" >> $GITHUB_OUTPUT
 
       - name: Push changes
         id: push
@@ -131,3 +152,7 @@ jobs:
               workflow_id: 'test.yml',
               ref: 'main'
             });
+
+      - name: Fail build
+        if: steps.sync.outputs.any_failed == '1'
+        run: exit 1
