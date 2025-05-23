@@ -51,15 +51,24 @@
   systemd,
 }:
 
+{
+  version,
+  rev,
+  srcHash,
+  cargoVendorHash,
+  missingHashes ? null,
+  yarnOfflineCacheHash,
+}:
+
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass-desktop";
-  version = "1.31.1.2";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
-    rev = "proton-pass@${finalAttrs.version}";
-    hash = "sha256-06D6D0Vza9eAKfMy0neAUaDHtZaO+cfNRKgV2Yvay7M=";
+    inherit rev;
+    hash = srcHash;
   };
 
   postPatch = ''
@@ -129,18 +138,18 @@ stdenv.mkDerivation (finalAttrs: {
       cargoRoot
       ;
 
-    hash = "sha256-s4z+HLRBWpOkMXNPZjZRhHyPhTX/iu5ZGYUTJ10TNrg=";
+    hash = cargoVendorHash;
   };
 
-  missingHashes = ./missing-hashes.json;
-  offlineCache = yarn-berry_4.fetchYarnBerryDeps {
+  inherit missingHashes;
+  yarnOfflineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
       src
       postPatch
       missingHashes
       ;
 
-    hash = "sha256-qcd0KSZBdLyCMXWxVBk0kwtwfDEklxSZ2GStPLb/ct0=";
+    hash = yarnOfflineCacheHash;
   };
 
   postConfigure = ''
@@ -198,7 +207,7 @@ stdenv.mkDerivation (finalAttrs: {
     inherit (electron.meta) platforms;
     description = "Proton Pass Desktop Client";
     homepage = "https://proton.me/pass";
-    changelog = "https://github.com/ProtonMail/WebClients/blob/${finalAttrs.src.tag}/applications/pass-desktop/CHANGELOG.md";
+    changelog = "https://github.com/ProtonMail/WebClients/blob/main/applications/pass-desktop/CHANGELOG.md";
     sourceProvenance = [ lib.sourceTypes.fromSource ];
     license = [ lib.licenses.gpl3Plus ];
     mainProgram = "proton-pass";

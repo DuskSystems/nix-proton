@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-PACKAGE="./pkgs/proton-mail-desktop/default.nix"
-MISSING_HASHES="./pkgs/proton-mail-desktop/missing-hashes.json"
+cleanup() {
+  if [ -n "${TEMP_DIR:-}" ] && [ -d "$TEMP_DIR" ]; then
+    rm -rf "$TEMP_DIR"
+  fi
+}
+trap cleanup EXIT
+
+PACKAGE="./pkgs/proton-mail-desktop/stable/default.nix"
+MISSING_HASHES="./pkgs/proton-mail-desktop/stable/missing-hashes.json"
 
 OLD_VERSION=$(nix eval --raw .#proton-mail-desktop.version)
 OLD_SRC_HASH=$(nix eval --raw .#proton-mail-desktop.src.outputHash)
@@ -14,7 +21,7 @@ if [ "$OLD_VERSION" = "$NEW_VERSION" ] && [ "$OLD_SRC_HASH" = "$NEW_SRC_HASH" ];
   exit 0
 fi
 
-OLD_BERRY_HASH=$(nix eval --raw .#proton-mail-desktop.offlineCache.outputHash)
+OLD_BERRY_HASH=$(nix eval --raw .#proton-mail-desktop.yarnOfflineCache.outputHash)
 
 TEMP_DIR=$(mktemp -d)
 pushd "$TEMP_DIR"
@@ -34,5 +41,3 @@ cp "$TEMP_DIR/WebClients/missing-hashes.json" "$MISSING_HASHES"
 sed -i "s|$OLD_VERSION|$NEW_VERSION|g" "$PACKAGE"
 sed -i "s|$OLD_SRC_HASH|$NEW_SRC_HASH|g" "$PACKAGE"
 sed -i "s|$OLD_BERRY_HASH|$NEW_BERRY_HASH|g" "$PACKAGE"
-
-rm -rf $TEMP_DIR

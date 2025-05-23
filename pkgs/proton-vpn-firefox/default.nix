@@ -8,15 +8,22 @@
   zip,
 }:
 
+{
+  version,
+  rev,
+  srcHash,
+  npmDepsHash,
+}:
+
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-vpn-firefox";
-  version = "1f6dcf2be5abd1e5809860df54cbb21ade75343d";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "ProtonVPN";
     repo = "proton-vpn-browser-extension";
-    rev = finalAttrs.version;
-    hash = "sha256-HhuHY275NIc8c9FYbxROLdqFNplWwhEtSbMITk8wfTU=";
+    inherit rev;
+    hash = srcHash;
   };
 
   postPatch = ''
@@ -35,7 +42,7 @@ stdenv.mkDerivation (finalAttrs: {
       postPatch
       ;
 
-    hash = "sha256-m/gXKDLqmoIN1g7WeYX3+2RRIXJLAkVXqxxyGw00gh8=";
+    hash = npmDepsHash;
   };
 
   buildPhase = ''
@@ -51,7 +58,7 @@ stdenv.mkDerivation (finalAttrs: {
   meta = {
     description = "Proton VPN Firefox Extension";
     homepage = "https://protonvpn.com";
-    changelog = "https://github.com/ProtonVPN/proton-vpn-browser-extension/blob/${finalAttrs.src.rev}/changelog.md";
+    changelog = "https://github.com/ProtonVPN/proton-vpn-browser-extension/blob/main/changelog.md";
     sourceProvenance = [ lib.sourceTypes.fromSource ];
     license = [ lib.licenses.gpl3Plus ];
     platforms = lib.platforms.all;

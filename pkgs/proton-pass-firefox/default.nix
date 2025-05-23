@@ -10,15 +10,23 @@
   jq,
 }:
 
+{
+  version,
+  rev,
+  srcHash,
+  missingHashes ? null,
+  yarnOfflineCacheHash,
+}:
+
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass-firefox";
-  version = "1.31.1.2";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
-    rev = "proton-pass@${finalAttrs.version}";
-    hash = "sha256-06D6D0Vza9eAKfMy0neAUaDHtZaO+cfNRKgV2Yvay7M=";
+    inherit rev;
+    hash = srcHash;
   };
 
   postPatch = ''
@@ -38,28 +46,25 @@ stdenv.mkDerivation (finalAttrs: {
     YARN_ENABLE_SCRIPTS = "0";
   };
 
-  missingHashes = ./missing-hashes.json;
-  offlineCache = yarn-berry_4.fetchYarnBerryDeps {
+  inherit missingHashes;
+  yarnOfflineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
       src
       postPatch
       missingHashes
       ;
 
-    hash = "sha256-qcd0KSZBdLyCMXWxVBk0kwtwfDEklxSZ2GStPLb/ct0=";
+    hash = yarnOfflineCacheHash;
   };
 
   buildPhase = ''
     pushd applications/pass-extension
-
     yarn run config
     cp src/app/config.ts src/app/config.ff-release.ts
     yarn run build:extension:ff
-
     pushd dist
     zip -r 78272b6fa58f4a1abaac99321d503a20@proton.me.xpi .
     popd
-
     popd
   '';
 
@@ -71,7 +76,7 @@ stdenv.mkDerivation (finalAttrs: {
   meta = {
     description = "Proton Pass Firefox Extension";
     homepage = "https://proton.me/pass";
-    changelog = "https://github.com/ProtonMail/WebClients/blob/${finalAttrs.src.tag}/applications/pass-extension/CHANGELOG.md";
+    changelog = "https://github.com/ProtonMail/WebClients/blob/main/applications/pass-extension/CHANGELOG.md";
     sourceProvenance = [ lib.sourceTypes.fromSource ];
     license = [ lib.licenses.gpl3Plus ];
     platforms = lib.platforms.all;

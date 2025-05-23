@@ -34,7 +34,14 @@ jobs:
       - name: Test builds
         run: |
           set -euxo pipefail
+
           nix build .#proton-mail-desktop
+          nix build .#proton-mail-desktop-nightly
+
           nix build .#proton-pass-desktop
+          nix build .#proton-pass-desktop-nightly
+
           nix build .#proton-pass-firefox
+          nix build .#proton-pass-firefox-nightly
+
           nix build .#proton-vpn-firefox

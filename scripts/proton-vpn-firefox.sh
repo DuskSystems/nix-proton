@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
+cleanup() {
+  if [ -n "${TEMP_DIR:-}" ] && [ -d "$TEMP_DIR" ]; then
+    rm -rf "$TEMP_DIR"
+  fi
+}
+trap cleanup EXIT
+
 PACKAGE="./pkgs/proton-vpn-firefox/default.nix"
 
 OLD_VERSION=$(nix eval --raw .#proton-vpn-firefox.version)
@@ -29,5 +36,3 @@ popd
 sed -i "s|$OLD_VERSION|$NEW_VERSION|g" "$PACKAGE"
 sed -i "s|$OLD_SRC_HASH|$NEW_SRC_HASH|g" "$PACKAGE"
 sed -i "s|$OLD_NPM_HASH|$NEW_NPM_HASH|g" "$PACKAGE"
-
-rm -rf $TEMP_DIR

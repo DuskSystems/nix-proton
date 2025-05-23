@@ -8,26 +8,26 @@ cleanup() {
 }
 trap cleanup EXIT
 
-PACKAGE="./pkgs/proton-pass-firefox/stable/default.nix"
-MISSING_HASHES="./pkgs/proton-pass-firefox/stable/missing-hashes.json"
+PACKAGE="./pkgs/proton-pass-firefox/nightly/default.nix"
+MISSING_HASHES="./pkgs/proton-pass-firefox/nightly/missing-hashes.json"
 
-OLD_VERSION=$(nix eval --raw .#proton-pass-firefox.version)
-OLD_SRC_HASH=$(nix eval --raw .#proton-pass-firefox.src.outputHash)
+OLD_VERSION=$(nix eval --raw .#proton-pass-firefox-nightly.version)
+OLD_SRC_HASH=$(nix eval --raw .#proton-pass-firefox-nightly.src.outputHash)
 
-NEW_VERSION=$(curl "https://api.github.com/repos/ProtonMail/WebClients/git/refs/tags" | jq -r '[.[] | select(.ref | contains("proton-pass@")) | .ref | split("/")[2] | split("proton-pass@")[1] | select(contains("-") | not)] | sort | last')
-NEW_SRC_HASH=$(nix-prefetch-github ProtonMail WebClients --json --rev "proton-pass@${NEW_VERSION}" | jq -r '.hash')
+NEW_VERSION=$(curl -s "https://api.github.com/repos/ProtonMail/WebClients/commits/main" | jq -r '.sha')
+NEW_SRC_HASH=$(nix-prefetch-github ProtonMail WebClients --json --rev "$NEW_VERSION" | jq -r '.hash')
 
 if [ "$OLD_VERSION" = "$NEW_VERSION" ] && [ "$OLD_SRC_HASH" = "$NEW_SRC_HASH" ]; then
   exit 0
 fi
 
-OLD_BERRY_HASH=$(nix eval --raw .#proton-pass-firefox.yarnOfflineCache.outputHash)
+OLD_BERRY_HASH=$(nix eval --raw .#proton-pass-firefox-nightly.yarnOfflineCache.outputHash)
 
 TEMP_DIR=$(mktemp -d)
 pushd "$TEMP_DIR"
 git clone https://github.com/ProtonMail/WebClients.git
 cd WebClients
-git checkout "proton-pass@$NEW_VERSION"
+git checkout "$NEW_VERSION"
 rm -rf .git
 
 yarn-berry-fetcher missing-hashes yarn.lock | tee missing-hashes.json

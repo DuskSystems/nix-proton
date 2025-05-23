@@ -47,15 +47,23 @@
   systemd,
 }:
 
+{
+  version,
+  rev,
+  srcHash,
+  missingHashes ? null,
+  yarnOfflineCacheHash,
+}:
+
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-mail-desktop";
-  version = "1.9.0";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
-    rev = "release/inbox-desktop@${finalAttrs.version}";
-    hash = "sha256-FZrvM4IPqRwp5/g6Bsaeu8y1MctlLIJ+pYz6RWikO8w=";
+    inherit rev;
+    hash = srcHash;
   };
 
   postPatch = ''
@@ -121,15 +129,15 @@ stdenv.mkDerivation (finalAttrs: {
     YARN_ENABLE_SCRIPTS = "0";
   };
 
-  missingHashes = ./missing-hashes.json;
-  offlineCache = yarn-berry_4.fetchYarnBerryDeps {
+  inherit missingHashes;
+  yarnOfflineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
       src
       postPatch
       missingHashes
       ;
 
-    hash = "sha256-IIxgYuAtpuDya+KJWDM28xMfRzrhjrKkkxX+Bq9q1zo=";
+    hash = yarnOfflineCacheHash;
   };
 
   postConfigure = ''
@@ -184,7 +192,7 @@ stdenv.mkDerivation (finalAttrs: {
     inherit (electron.meta) platforms;
     description = "Proton Mail Desktop Client";
     homepage = "https://proton.me/mail";
-    changelog = "https://github.com/ProtonMail/WebClients/blob/${finalAttrs.src.tag}/applications/inbox-desktop/CHANGELOG.md";
+    changelog = "https://github.com/ProtonMail/WebClients/blob/main/applications/inbox-desktop/CHANGELOG.md";
     sourceProvenance = [ lib.sourceTypes.fromSource ];
     license = [ lib.licenses.gpl3Plus ];
     mainProgram = "proton-mail";

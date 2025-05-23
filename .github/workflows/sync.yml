@@ -108,13 +108,28 @@ jobs:
             FAILED=1
           }
 
+          ./scripts/proton-mail-desktop-nightly.sh || {
+            echo "failed to sync: proton-mail-desktop-nightly"
+            FAILED=1
+          }
+
           ./scripts/proton-pass-desktop.sh || {
             echo "failed to sync: proton-pass-desktop"
             FAILED=1
           }
 
+          ./scripts/proton-pass-desktop-nightly.sh || {
+            echo "failed to sync: proton-pass-desktop-nightly"
+            FAILED=1
+          }
+
           ./scripts/proton-pass-firefox.sh || {
             echo "failed to sync: proton-pass-firefox"
+            FAILED=1
+          }
+
+          ./scripts/proton-pass-firefox-nightly.sh || {
+            echo "failed to sync: proton-pass-firefox-nightly"
             FAILED=1
           }
 
