@@ -3,10 +3,10 @@
 }:
 
 buildProtonPassDesktop {
-  version = "9ba61edcbe328618ceb5a77fc778d90121391246";
+  version = "bce83347cb8a8ded23320809369390abfd961e42";
 
-  rev = "9ba61edcbe328618ceb5a77fc778d90121391246";
-  srcHash = "sha256-z3nb4kmLLqqy9w6ieF6b+aeu8UMwGyRG2VP2aTVbigA=";
+  rev = "bce83347cb8a8ded23320809369390abfd961e42";
+  srcHash = "sha256-aPRXRpu923aAn9KPfPY6t7KNrHzbJcPc57oL8BC76mE=";
 
   cargoVendorHash = "sha256-zdHAhCzLlw6rqDc6a5Kvx0pL/RsEjHaCRnhZv74XmUU=";
 
