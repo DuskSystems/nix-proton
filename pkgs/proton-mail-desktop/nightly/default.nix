@@ -3,11 +3,11 @@
 }:
 
 buildProtonMailDesktop {
-  version = "c2f7d4d65ad779f98fe3c798e69fdcd4110d0597";
+  version = "64478e0985114d1330ada8a075895b5dd03a0dde";
 
-  rev = "c2f7d4d65ad779f98fe3c798e69fdcd4110d0597";
-  srcHash = "sha256-I2FfIhJCL3wFAmtsY70YFRg1MbdFDjUFJyWpHVE9cVY=";
+  rev = "64478e0985114d1330ada8a075895b5dd03a0dde";
+  srcHash = "sha256-KzZUwb46YJ+M2+hPl3/K1Lz2P9J8nlH5onmHJk5wVew=";
 
   missingHashes = ./missing-hashes.json;
-  yarnOfflineCacheHash = "sha256-WWm7ER6ktDUSqV7QIX1nntc565qCXzY6aNvzia2vVlc=";
+  yarnOfflineCacheHash = "sha256-OfKoss09tUApbP0YyaMkZEbbmzD9Vp0G9B65TJtFJro=";
 }
