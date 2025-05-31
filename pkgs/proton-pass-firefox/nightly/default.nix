@@ -3,11 +3,11 @@
 }:
 
 buildProtonPassFirefox {
-  version = "cf8b10f0a5f5d29e9a53005dd03b89a3fc319085";
+  version = "de276b7b663ea471d906b085836f32767b4ce243";
 
-  rev = "cf8b10f0a5f5d29e9a53005dd03b89a3fc319085";
-  srcHash = "sha256-xOCEdoLttCzjFd6r0YZ9yWCwgGb9cQ/H6cyLhPhTiBA=";
+  rev = "de276b7b663ea471d906b085836f32767b4ce243";
+  srcHash = "sha256-DGfNqGW97to5HgFEUp4ltXO0HIbjzCnAarheIPyrG+0=";
 
   missingHashes = ./missing-hashes.json;
-  yarnOfflineCacheHash = "sha256-jqZFco+5HDVBON/+dMPkOgHicbetErHTlLfc/f9H10w=";
+  yarnOfflineCacheHash = "sha256-vmWD+d9ICSvw7OZbBwzf2UEJir6p0FMk1cgGCJ2nUds=";
 }
