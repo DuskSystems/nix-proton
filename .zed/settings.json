@@ -29,6 +29,12 @@
       "binary": {
         "path": "nil"
       }
+    },
+
+    "typos": {
+      "binary": {
+        "path": "typos-lsp"
+      }
     }
   }
 }

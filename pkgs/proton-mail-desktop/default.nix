@@ -2,142 +2,70 @@
   lib,
   stdenv,
   fetchFromGitHub,
-
   yarn-berry_4,
   nodejs,
-
   forgeConfigHook,
   electron,
-  zip,
-
-  autoPatchelfHook,
   makeWrapper,
   copyDesktopItems,
   makeDesktopItem,
-
-  alsa-lib,
-  at-spi2-core,
-  cairo,
-  cups,
-  dbus,
-  expat,
-  flac,
-  glib,
-  gtk3,
-  libffi,
-  libgbm,
-  libgcc,
-  libGL,
-  libjpeg,
-  libnotify,
-  libpng,
-  libX11,
-  libxcb,
-  libXcomposite,
-  libXdamage,
-  libXext,
-  libXfixes,
-  libxkbcommon,
-  libXrandr,
-  libxslt,
-  nspr,
-  nss,
-  pango,
-  pulseaudio,
-  systemd,
-}:
-
-{
-  version,
-  rev,
-  srcHash,
-  missingHashes ? null,
-  yarnOfflineCacheHash,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-mail-desktop";
-  inherit version;
+  version = "1.12.1";
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
-    inherit rev;
-    hash = srcHash;
+    rev = "release/inbox-desktop@${finalAttrs.version}";
+    hash = "sha256-My4bm6XV+ikupHhKJ/n8INNjBNVpzD2gCgRCrpdFKVo=";
   };
 
+  patches = [
+    ./patches/fix-workspaces.patch
+    ./patches/fix-wayland-crash.patch
+  ];
+
   postPatch = ''
-    # Fix hardcoded desktop file path.
+    cp ${./yarn.lock} yarn.lock
+
+    # Fix hardcoded desktop file path
     substituteInPlace applications/inbox-desktop/src/utils/protocol/default_mailto_linux.ts \
       --replace-fail "/usr/share/applications" "$out/share/applications"
-
-    # Add missing config file.
-    mkdir -p packages/config/mail
-    echo '{ "appConfig": { "sentryDesktop": "" } }' > packages/config/mail/appConfig.json
 
     patchShebangs .
   '';
 
   nativeBuildInputs = [
-    yarn-berry_4.yarnBerryConfigHook
     yarn-berry_4
+    yarn-berry_4.yarnBerryConfigHook
     nodejs
-
     forgeConfigHook
     electron
-    zip
-
-    autoPatchelfHook
     makeWrapper
     copyDesktopItems
   ];
 
-  buildInputs = [
-    alsa-lib
-    at-spi2-core
-    cairo
-    cups
-    dbus
-    expat
-    flac
-    glib
-    gtk3
-    libffi
-    libgbm
-    libgcc
-    libGL
-    libjpeg
-    libnotify
-    libpng
-    libX11
-    libxcb
-    libXcomposite
-    libXdamage
-    libXext
-    libXfixes
-    libxkbcommon
-    libXrandr
-    libxslt
-    nspr
-    nss
-    pango
-    pulseaudio
-    systemd
-  ];
-
   env = {
-    YARN_ENABLE_SCRIPTS = "0";
+    NODE_ENV = "production";
+    YARN_ENABLE_SCRIPTS = "false";
+
+    # Disable automatic updates by pretending to be a snap.
+    IS_SNAP = "1";
   };
 
-  inherit missingHashes;
+  missingHashes = ./missing-hashes.json;
+
   yarnOfflineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
       src
+      patches
       postPatch
       missingHashes
       ;
 
-    hash = yarnOfflineCacheHash;
+    hash = "sha256-Z5UBuS2gwiNeLTEe/KL6Vza77Qf3rbTQUArCiwpqCm8=";
   };
 
   postConfigure = ''
@@ -150,7 +78,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   installPhase = ''
     mkdir -p $out/share/proton-mail
-    cp -r applications/inbox-desktop/out/**/* $out/share/proton-mail
+    cp -r applications/inbox-desktop/out/**/resources $out/share/proton-mail
 
     mkdir -p $out/share/proton-mail/resources/assets
     cp -rL applications/inbox-desktop/assets/* $out/share/proton-mail/resources/assets
@@ -161,18 +89,14 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p $out/share/applications
     copyDesktopItems
 
-    mkdir -p $out/bin
-    ln -s "$out/share/proton-mail/Proton Mail" $out/bin/proton-mail
-
-    wrapProgram "$out/share/proton-mail/Proton Mail" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}" \
-      --set CHROME_DEVEL_SANDBOX $out/share/proton-mail/chrome-sandbox \
-      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}"
+    makeWrapper '${lib.getExe electron}' $out/bin/proton-mail \
+      --add-flags "$out/share/proton-mail/resources/app.asar" \
+      --set-default ELECTRON_FORCE_IS_PACKAGED 1
   '';
 
   desktopItems = [
     (makeDesktopItem {
-      name = "Proton Mail";
+      name = "proton-mail";
       desktopName = "Proton Mail";
       genericName = "Email Client";
       comment = "Proton Mail Desktop Client";
@@ -187,6 +111,10 @@ stdenv.mkDerivation (finalAttrs: {
       mimeTypes = [ "x-scheme-handler/mailto" ];
     })
   ];
+
+  passthru = {
+    updateScript = ./update.sh;
+  };
 
   meta = {
     inherit (electron.meta) platforms;

@@ -23,16 +23,8 @@ in
     substitutions = {
       electronVersion = electron.version;
       electronPath = "${electron}/libexec/electron";
+      zip = "${zip}/bin/zip";
       zipName = "electron-v${electron.version}-${platform}.zip";
-    };
-
-    propagatedBuildInputs = [
-      electron
-      zip
-    ];
-
-    meta = {
-      description = "Configure Electron Forge for offline builds";
     };
   } ./forge-config-hook.sh;
 }

@@ -2,177 +2,109 @@
   lib,
   stdenv,
   fetchFromGitHub,
-
   rustPlatform,
   rustc,
   cargo,
-
   yarn-berry_4,
   nodejs,
-
   forgeConfigHook,
   electron,
-  zip,
-
-  autoPatchelfHook,
   makeWrapper,
   copyDesktopItems,
   makeDesktopItem,
 
-  alsa-lib,
-  at-spi2-core,
-  cairo,
-  cups,
-  dbus,
-  expat,
-  flac,
-  glib,
-  gtk3,
-  libffi,
-  libgbm,
-  libgcc,
-  libGL,
-  libjpeg,
-  libnotify,
-  libpng,
-  libX11,
-  libxcb,
-  libXcomposite,
-  libXdamage,
-  libXext,
-  libXfixes,
+  # Linux
   libxkbcommon,
-  libXrandr,
-  libxslt,
-  nspr,
-  nss,
-  pango,
-  pulseaudio,
-  systemd,
 }:
 
-{
-  version,
-  rev,
-  srcHash,
-  cargoVendorHash,
-  missingHashes ? null,
-  yarnOfflineCacheHash,
-}:
+let
+  napiTargets = {
+    x86_64-linux = "x64-gnu";
+    aarch64-linux = "arm64-gnu";
+  };
 
+  napiTarget = napiTargets."${stdenv.hostPlatform.system}" or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
+in
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass-desktop";
-  inherit version;
+  version = "1.34.500";
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
-    inherit rev;
-    hash = srcHash;
+    rev = "proton-pass@${finalAttrs.version}";
+    hash = "sha256-paPyazt4HU9RDHSbZKDWchNRPYDoceGE01xdcx6VEs4=";
   };
 
+  patches = [
+    ./patches/fix-workspaces.patch
+  ];
+
   postPatch = ''
+    cp ${./yarn.lock} yarn.lock
     patchShebangs .
+
+    substituteInPlace applications/pass-desktop/src/main.ts \
+      --replace-fail "process.resourcesPath" "'$out/share/proton-pass/resources'"
   '';
 
   nativeBuildInputs = [
     rustPlatform.cargoSetupHook
     rustc
     cargo
-
-    yarn-berry_4.yarnBerryConfigHook
     yarn-berry_4
+    yarn-berry_4.yarnBerryConfigHook
     nodejs
-
     forgeConfigHook
     electron
-    zip
-
-    autoPatchelfHook
     makeWrapper
     copyDesktopItems
   ];
 
   buildInputs = [
-    alsa-lib
-    at-spi2-core
-    cairo
-    cups
-    dbus
-    expat
-    flac
-    glib
-    gtk3
-    libffi
-    libgbm
-    libgcc
-    libGL
-    libjpeg
-    libnotify
-    libpng
-    libX11
-    libxcb
-    libXcomposite
-    libXdamage
-    libXext
-    libXfixes
     libxkbcommon
-    libXrandr
-    libxslt
-    nspr
-    nss
-    pango
-    pulseaudio
-    systemd
   ];
-
-  env = {
-    YARN_ENABLE_SCRIPTS = "0";
-  };
 
   cargoRoot = "applications/pass-desktop/native";
   cargoDeps = rustPlatform.fetchCargoVendor {
-    inherit (finalAttrs)
-      src
-      postPatch
-      cargoRoot
-      ;
-
-    hash = cargoVendorHash;
+    inherit (finalAttrs) src postPatch cargoRoot;
+    hash = "sha256-Pl+0ksrQ0w2CHGv2ZsP60ONZdBGed15pcXRvaO6wK3o=";
   };
 
-  inherit missingHashes;
+  env = {
+    NODE_ENV = "production";
+    YARN_ENABLE_SCRIPTS = "false";
+  };
+
+  missingHashes = ./missing-hashes.json;
+
   yarnOfflineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
       src
+      patches
       postPatch
       missingHashes
       ;
 
-    hash = yarnOfflineCacheHash;
+    hash = "sha256-xLpS2AHJKop5IwPMeJQzKZKM7+oPub3BMuh6Np1vOKs=";
   };
 
   postConfigure = ''
-    forgeConfigHook applications/pass-desktop/forge.config.js
+    forgeConfigHook applications/pass-desktop/forge.config.ts
   '';
 
   buildPhase = ''
-    # This is the same as running `yarn workspace proton-pass-desktop build:desktop`
-    # Except we only build a native release for the current platform.
-    pushd applications/pass-desktop
-
-    pushd native
-    yarn build
+    pushd applications/pass-desktop/native
+    cargo build --release
+    mv target/release/libnative.so native.linux-${napiTarget}.node
     popd
 
-    yarn run config
-    yarn electron-forge package
-    popd
+    yarn workspace proton-pass-desktop electron-forge package
   '';
 
   installPhase = ''
     mkdir -p $out/share/proton-pass
-    cp -r applications/pass-desktop/out/**/* $out/share/proton-pass
+    cp -r applications/pass-desktop/out/**/resources $out/share/proton-pass
 
     mkdir -p $out/share/icons/hicolor/scalable/apps
     cp $out/share/proton-pass/resources/assets/logo.svg $out/share/icons/hicolor/scalable/apps/proton-pass.svg
@@ -180,18 +112,14 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p $out/share/applications
     copyDesktopItems
 
-    mkdir -p $out/bin
-    ln -s "$out/share/proton-pass/Proton Pass" $out/bin/proton-pass
-
-    wrapProgram "$out/share/proton-pass/Proton Pass" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}" \
-      --set CHROME_DEVEL_SANDBOX $out/share/proton-pass/chrome-sandbox \
-      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}"
+    makeWrapper '${lib.getExe electron}' $out/bin/proton-pass \
+      --add-flags "$out/share/proton-pass/resources/app.asar" \
+      --set-default ELECTRON_FORCE_IS_PACKAGED 1
   '';
 
   desktopItems = [
     (makeDesktopItem {
-      name = "Proton Pass";
+      name = "proton-pass";
       desktopName = "Proton Pass";
       genericName = "Password Manager";
       comment = "Proton Pass Desktop Client";
@@ -202,6 +130,10 @@ stdenv.mkDerivation (finalAttrs: {
       startupWMClass = "proton-pass";
     })
   ];
+
+  passthru = {
+    updateScript = ./update.sh;
+  };
 
   meta = {
     inherit (electron.meta) platforms;

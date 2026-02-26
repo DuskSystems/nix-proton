@@ -2,69 +2,59 @@
   lib,
   stdenv,
   fetchFromGitHub,
-
   yarn-berry_4,
   nodejs,
-
   zip,
-  jq,
-}:
-
-{
-  version,
-  rev,
-  srcHash,
-  missingHashes ? null,
-  yarnOfflineCacheHash,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass-firefox";
-  inherit version;
+  version = "1.34.500";
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
-    inherit rev;
-    hash = srcHash;
+    rev = "proton-pass@${finalAttrs.version}";
+    hash = "sha256-paPyazt4HU9RDHSbZKDWchNRPYDoceGE01xdcx6VEs4=";
   };
 
+  patches = [
+    ./patches/fix-workspaces.patch
+  ];
+
   postPatch = ''
+    cp ${./yarn.lock} yarn.lock
     patchShebangs .
   '';
 
   nativeBuildInputs = [
-    yarn-berry_4.yarnBerryConfigHook
     yarn-berry_4
+    yarn-berry_4.yarnBerryConfigHook
     nodejs
-
     zip
-    jq
   ];
 
   env = {
-    YARN_ENABLE_SCRIPTS = "0";
+    YARN_ENABLE_SCRIPTS = "false";
   };
 
-  inherit missingHashes;
+  missingHashes = ./missing-hashes.json;
+
   yarnOfflineCache = yarn-berry_4.fetchYarnBerryDeps {
     inherit (finalAttrs)
       src
+      patches
       postPatch
       missingHashes
       ;
 
-    hash = yarnOfflineCacheHash;
+    hash = "sha256-xLpS2AHJKop5IwPMeJQzKZKM7+oPub3BMuh6Np1vOKs=";
   };
 
   buildPhase = ''
-    pushd applications/pass-extension
-    yarn run config
-    cp src/app/config.ts src/app/config.ff-release.ts
-    yarn run build:extension:ff
-    pushd dist
+    yarn workspace proton-pass-extension build:extension:ff
+    pushd applications/pass-extension/dist
     zip -r 78272b6fa58f4a1abaac99321d503a20@proton.me.xpi .
-    popd
     popd
   '';
 
@@ -72,6 +62,10 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p $out/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}
     cp applications/pass-extension/dist/*.xpi $out/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}
   '';
+
+  passthru = {
+    updateScript = ./update.sh;
+  };
 
   meta = {
     description = "Proton Pass Firefox Extension";

@@ -36,47 +36,20 @@
       overlays = {
         default = final: prev: {
           electron-forge-hooks = prev.callPackage pkgs/electron-forge-hooks { };
-          inherit (final.electron-forge-hooks)
-            forgeConfigHook
-            ;
+          inherit (final.electron-forge-hooks) forgeConfigHook;
 
-          fetch-cargo-vendor-util = prev.writers.writePython3Bin "fetch-cargo-vendor-util" {
-            libraries = with prev.python3Packages; [
-              requests
-            ];
-            flakeIgnore = [
-              "E501"
-            ];
-          } (builtins.readFile "${prev.path}/pkgs/build-support/rust/fetch-cargo-vendor-util.py");
-
-          buildProtonMailDesktop = prev.callPackage pkgs/proton-mail-desktop { };
-          proton-mail-desktop = prev.callPackage pkgs/proton-mail-desktop/stable { };
-          proton-mail-desktop-nightly = prev.callPackage pkgs/proton-mail-desktop/nightly { };
-
-          buildProtonPassDesktop = prev.callPackage pkgs/proton-pass-desktop { };
-          proton-pass-desktop = prev.callPackage pkgs/proton-pass-desktop/stable { };
-          proton-pass-desktop-nightly = prev.callPackage pkgs/proton-pass-desktop/nightly { };
-
-          buildProtonPassFirefox = prev.callPackage pkgs/proton-pass-firefox { };
-          proton-pass-firefox = prev.callPackage pkgs/proton-pass-firefox/stable { };
-          proton-pass-firefox-nightly = prev.callPackage pkgs/proton-pass-firefox/nightly { };
-
-          buildProtonVpnFirefox = prev.callPackage pkgs/proton-vpn-firefox { };
-          proton-vpn-firefox = prev.callPackage pkgs/proton-vpn-firefox/stable { };
+          proton-mail-desktop = prev.callPackage pkgs/proton-mail-desktop { };
+          proton-pass-desktop = prev.callPackage pkgs/proton-pass-desktop { };
+          proton-pass-firefox = prev.callPackage pkgs/proton-pass-firefox { };
+          proton-vpn-firefox = prev.callPackage pkgs/proton-vpn-firefox { };
         };
       };
 
       # nix build .#<name>
       packages = perSystemPkgs (pkgs: {
         proton-mail-desktop = pkgs.proton-mail-desktop;
-        proton-mail-desktop-nightly = pkgs.proton-mail-desktop-nightly;
-
         proton-pass-desktop = pkgs.proton-pass-desktop;
-        proton-pass-desktop-nightly = pkgs.proton-pass-desktop-nightly;
-
         proton-pass-firefox = pkgs.proton-pass-firefox;
-        proton-pass-firefox-nightly = pkgs.proton-pass-firefox-nightly;
-
         proton-vpn-firefox = pkgs.proton-vpn-firefox;
       });
 
@@ -91,21 +64,17 @@
           };
 
           buildInputs = with pkgs; [
-            # Update
-            curl
-            jq
-            gnused
-            nix-prefetch-git
-            nix-prefetch-github
-            prefetch-npm-deps
-            nodejs
-            yarn-berry_4
-            yarn-berry_4.yarn-berry-fetcher
-            fetch-cargo-vendor-util
-            cargo
+            # GitHub
+            gh
+            zizmor
+
+            # Spellchecking
+            typos
+            typos-lsp
 
             # Nix
-            nixfmt-rfc-style
+            nix-update
+            nixfmt
             nixd
             nil
           ];

@@ -8,22 +8,15 @@
   zip,
 }:
 
-{
-  version,
-  rev,
-  srcHash,
-  npmDepsHash,
-}:
-
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-vpn-firefox";
-  inherit version;
+  version = "0-unstable-2026-02-02";
 
   src = fetchFromGitHub {
     owner = "ProtonVPN";
     repo = "proton-vpn-browser-extension";
-    inherit rev;
-    hash = srcHash;
+    rev = "17cb6d2e4787d75174b474b8230f8862807983e2";
+    hash = "sha256-ARDmrPhiE8zLZVCK0fxPjKA0oVpNGRPRcsLoz6MOXrg=";
   };
 
   postPatch = ''
@@ -37,12 +30,8 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   npmDeps = fetchNpmDeps {
-    inherit (finalAttrs)
-      src
-      postPatch
-      ;
-
-    hash = npmDepsHash;
+    inherit (finalAttrs) src postPatch;
+    hash = "sha256-IjBeC3b63ibOj4MyFxyGGvZYZxVvWmWN46pO50Kro2U=";
   };
 
   buildPhase = ''

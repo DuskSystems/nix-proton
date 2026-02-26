@@ -1,0 +1,10 @@
+--- a/applications/inbox-desktop/src/store/boundsStore.ts
++++ b/applications/inbox-desktop/src/store/boundsStore.ts
+@@ -61,7 +61,7 @@ export const getWindowBounds = (): WindowBounds => {
+
+     if (windowBounds.x === DEFAULT_WINDOW_BOUNDS.x || windowBounds.y === DEFAULT_WINDOW_BOUNDS.y) {
+-        const { workArea } = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
++        const { workArea } = screen.getPrimaryDisplay();
+         windowBounds.x = Math.round(workArea.x + workArea.width / 2 - windowBounds.width / 2);
+         windowBounds.y = Math.round(workArea.y + workArea.height / 2 - windowBounds.height / 2);
+     }

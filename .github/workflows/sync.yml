@@ -1,173 +1,32 @@
-name: sync
+name: Sync
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   schedule:
     - cron: "0 3 * * *"
+
+permissions: {}
 
 concurrency:
   group: sync
   cancel-in-progress: false
 
-permissions:
-  contents: write
-  actions: write
-
 jobs:
   sync:
+    name: Sync
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write # push
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           persist-credentials: true
 
-      - name: Free space
-        run: |
-          set -euxo pipefail
-
-          echo "[BEFORE]"
-          sudo df --human-readable
-
-          sudo apt-get purge --yes \
-            azure-cli \
-            containerd.io \
-            containernetworking-plugins \
-            docker-ce \
-            docker-ce-cli \
-            dotnet-sdk-* \
-            firefox \
-            gh \
-            google-chrome-stable \
-            google-cloud-cli \
-            kubectl \
-            libllvm* \
-            linux-azure-* \
-            linux-modules-*-azure \
-            llvm-*-dev \
-            microsoft-edge-stable \
-            mysql-client-core-* \
-            mysql-server-core-* \
-            openjdk-*-jre-headless \
-            php* \
-            podman \
-            powershell \
-            python3-botocore \
-            ruby* \
-            shellcheck \
-            skopeo \
-            snapd \
-            temurin-*-jdk \
-            vim-runtime
-
-          sudo apt-get autoremove --yes
-          sudo apt-get clean
-
-          sudo rm -rf \
-            /opt/ghc \
-            /opt/hostedtoolcache \
-            /usr/local/.ghcup \
-            /usr/local/aws-cli \
-            /usr/local/aws-sam-cli \
-            /usr/local/go \
-            /usr/local/graalvm \
-            /usr/local/lib/R \
-            /usr/local/lib/android \
-            /usr/local/lib/node_modules \
-            /usr/local/lib/nodejs \
-            /usr/local/share/boost \
-            /usr/local/share/chromium \
-            /usr/local/share/powershell \
-            /usr/share/doc \
-            /usr/share/dotnet \
-            /usr/share/locale \
-            /usr/share/man \
-            /usr/share/swift \
-            /var/cache/apt/archives
-
-          echo "[AFTER]"
-          sudo df --human-readable
-
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v30
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Sync updates
-        id: sync
-        shell: nix develop --command bash {0}
-        run: |
-          set -uxo pipefail
-
-          FAILED=0
-
-          ./scripts/proton-mail-desktop.sh || {
-            echo "failed to sync: proton-mail-desktop"
-            FAILED=1
-          }
-
-          ./scripts/proton-mail-desktop-nightly.sh || {
-            echo "failed to sync: proton-mail-desktop-nightly"
-            FAILED=1
-          }
-
-          ./scripts/proton-pass-desktop.sh || {
-            echo "failed to sync: proton-pass-desktop"
-            FAILED=1
-          }
-
-          ./scripts/proton-pass-desktop-nightly.sh || {
-            echo "failed to sync: proton-pass-desktop-nightly"
-            FAILED=1
-          }
-
-          ./scripts/proton-pass-firefox.sh || {
-            echo "failed to sync: proton-pass-firefox"
-            FAILED=1
-          }
-
-          ./scripts/proton-pass-firefox-nightly.sh || {
-            echo "failed to sync: proton-pass-firefox-nightly"
-            FAILED=1
-          }
-
-          ./scripts/proton-vpn-firefox.sh || {
-            echo "failed to sync: proton-vpn-firefox"
-            FAILED=1
-          }
-
-          echo "any_failed=$FAILED" >> $GITHUB_OUTPUT
-
-      - name: Push changes
-        id: push
-        if: github.event_name != 'pull_request'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git add .
-            git commit -m "$(date --utc --rfc-email)"
-            git push
-            echo "pushed=true" >> $GITHUB_OUTPUT
-          else
-            echo "pushed=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Trigger test workflow
-        if: steps.push.outputs.pushed == 'true'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'test.yml',
-              ref: 'main'
-            });
-
-      - name: Fail build
-        if: steps.sync.outputs.any_failed == '1'
-        run: exit 1
+        run: ./scripts/sync.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
