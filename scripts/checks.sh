@@ -8,5 +8,3 @@ zizmor --pedantic .github
 
 nix build .#proton-mail-desktop
 nix build .#proton-pass-desktop
-nix build .#proton-pass-firefox
-nix build .#proton-vpn-firefox

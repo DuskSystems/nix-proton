@@ -3,8 +3,6 @@ set -euxo pipefail
 
 nix-update --flake --use-update-script proton-mail-desktop
 nix-update --flake --use-update-script proton-pass-desktop
-nix-update --flake --use-update-script proton-pass-firefox
-nix-update --flake --version=branch proton-vpn-firefox
 
 if [[ -n "$(git status --porcelain)" ]]; then
   git config user.name "github-actions[bot]"

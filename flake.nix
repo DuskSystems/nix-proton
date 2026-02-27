@@ -40,8 +40,6 @@
 
           proton-mail-desktop = prev.callPackage pkgs/proton-mail-desktop { };
           proton-pass-desktop = prev.callPackage pkgs/proton-pass-desktop { };
-          proton-pass-firefox = prev.callPackage pkgs/proton-pass-firefox { };
-          proton-vpn-firefox = prev.callPackage pkgs/proton-vpn-firefox { };
         };
       };
 
@@ -49,8 +47,6 @@
       packages = perSystemPkgs (pkgs: {
         proton-mail-desktop = pkgs.proton-mail-desktop;
         proton-pass-desktop = pkgs.proton-pass-desktop;
-        proton-pass-firefox = pkgs.proton-pass-firefox;
-        proton-vpn-firefox = pkgs.proton-vpn-firefox;
       });
 
       devShells = perSystemPkgs (pkgs: {
