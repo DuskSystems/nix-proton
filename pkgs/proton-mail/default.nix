@@ -12,7 +12,7 @@
 }:
 
 stdenv.mkDerivation (finalAttrs: {
-  pname = "proton-mail-desktop";
+  pname = "proton-mail";
   version = "1.12.1";
 
   src = fetchFromGitHub {

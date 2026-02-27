@@ -38,15 +38,15 @@
           electron-forge-hooks = prev.callPackage pkgs/electron-forge-hooks { };
           inherit (final.electron-forge-hooks) forgeConfigHook;
 
-          proton-mail-desktop = prev.callPackage pkgs/proton-mail-desktop { };
-          proton-pass-desktop = prev.callPackage pkgs/proton-pass-desktop { };
+          proton-mail = prev.callPackage pkgs/proton-mail { };
+          proton-pass = prev.callPackage pkgs/proton-pass { };
         };
       };
 
       # nix build .#<name>
       packages = perSystemPkgs (pkgs: {
-        proton-mail-desktop = pkgs.proton-mail-desktop;
-        proton-pass-desktop = pkgs.proton-pass-desktop;
+        proton-mail = pkgs.proton-mail;
+        proton-pass = pkgs.proton-pass;
       });
 
       devShells = perSystemPkgs (pkgs: {

@@ -26,7 +26,7 @@ let
   napiTarget = napiTargets."${stdenv.hostPlatform.system}" or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
 in
 stdenv.mkDerivation (finalAttrs: {
-  pname = "proton-pass-desktop";
+  pname = "proton-pass";
   version = "1.34.500";
 
   src = fetchFromGitHub {

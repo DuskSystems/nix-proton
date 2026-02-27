@@ -6,5 +6,5 @@ nixfmt --width=120 --check **/*.nix
 typos
 zizmor --pedantic .github
 
-nix build .#proton-mail-desktop
-nix build .#proton-pass-desktop
+nix build .#proton-mail
+nix build .#proton-pass

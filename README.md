@@ -7,13 +7,15 @@ Nix expressions for Proton applications, built from source.
 
 ## Packages
 
-- `proton-mail-desktop`
-- `proton-pass-desktop`
+- `proton-mail`
+- `proton-pass`
 
 ## Upstreaming
 
 I'll likely upstream this into nixpkgs eventually, but there's a few blockers/concerns:
+
 - [Opening links on NixOS may not work by default](https://github.com/NixOS/nixpkgs/issues/160923).
-- [Replace custom Electron hooks with upstream hooks](https://github.com/NixOS/nixpkgs/pull/487711)
+- [Replace custom Electron hooks with upstream hooks](https://github.com/NixOS/nixpkgs/pull/487711).
 - [Protons release process is a little spotty, with old tags/branches being deleted when their repos are re-synced](https://github.com/ProtonMail/WebClients/issues/464).
-- No MacOS support currently.
+- The upstream monorepo has workspaces with private dependencies, so we need to maintain patches and vendored lockfiles per package. Might be solvable through `yarn workspaces focus` support.
+- No macOS support currently.

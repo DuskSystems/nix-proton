@@ -1,8 +1,8 @@
 #!/usr/bin/env -S nix develop --command bash
 set -euxo pipefail
 
-nix-update --flake --use-update-script proton-mail-desktop
-nix-update --flake --use-update-script proton-pass-desktop
+nix-update --flake --use-update-script proton-mail
+nix-update --flake --use-update-script proton-pass
 
 if [[ -n "$(git status --porcelain)" ]]; then
   git config user.name "github-actions[bot]"
