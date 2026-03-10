@@ -27,13 +27,13 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "proton-pass";
-  version = "1.34.500";
+  version = "1.35.0";
 
   src = fetchFromGitHub {
     owner = "ProtonMail";
     repo = "WebClients";
     rev = "proton-pass@${finalAttrs.version}";
-    hash = "sha256-paPyazt4HU9RDHSbZKDWchNRPYDoceGE01xdcx6VEs4=";
+    hash = "sha256-zQmos0+a43FvjJ+qU9B/wXrtXzFAXpJIXPGewFN0uIk=";
   };
 
   patches = [
@@ -68,7 +68,7 @@ stdenv.mkDerivation (finalAttrs: {
   cargoRoot = "applications/pass-desktop/native";
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit (finalAttrs) src postPatch cargoRoot;
-    hash = "sha256-Pl+0ksrQ0w2CHGv2ZsP60ONZdBGed15pcXRvaO6wK3o=";
+    hash = "sha256-1VJ7UkqOjvmCeNUxek7pp+ZK/oSEoU0ngERvkXrku1w=";
   };
 
   env = {
@@ -86,7 +86,7 @@ stdenv.mkDerivation (finalAttrs: {
       missingHashes
       ;
 
-    hash = "sha256-xLpS2AHJKop5IwPMeJQzKZKM7+oPub3BMuh6Np1vOKs=";
+    hash = "sha256-mj48nkktPBcF4NFQIK5FTJdrJ6IRDlYqqZ5vvAsJVww=";
   };
 
   postConfigure = ''
